@@ -7,10 +7,10 @@ React + Vite frontend.
 ```bash
 npm install
 cp .env.example .env
-npm run dev
+npm start
 ```
 
-По умолчанию сайт откроется на `http://localhost:5173`.
+Сайт открывается на `http://localhost:3000`.
 
 ## Логика
 
