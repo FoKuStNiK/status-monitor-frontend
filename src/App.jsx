@@ -98,48 +98,42 @@ export default function App() {
 
   return (
     <main className="page-shell">
-      <section className="panel">
-        <header className="page-header">
-          <div>
-            <p className="eyebrow">STATUS MONITOR</p>
-            <h1>Мониторинг состояний</h1>
-            <p className="subtitle">Последнее состояние каждого ID в реальном времени.</p>
-          </div>
-          <ConnectionStatus status={connectionStatus} />
-        </header>
+      <header className="page-header">
+        <h1>Мониторинг состояний</h1>
+        <ConnectionStatus status={connectionStatus} />
+      </header>
 
-        {connectionStatus === 'reconnecting' && (
-          <div className="connection-warning" role="alert">
-            <strong>Соединение с сервером потеряно.</strong>
-            <span> Данные могут быть неактуальны. Выполняется повторное подключение...</span>
-          </div>
-        )}
+      {connectionStatus === 'reconnecting' && (
+        <div className="connection-warning" role="alert">
+          <strong>Соединение с сервером потеряно.</strong>
+          <span> Данные могут быть неактуальны. Выполняется повторное подключение...</span>
+        </div>
+      )}
 
-        {error && (
-          <div className="error-message" role="alert">{error}</div>
-        )}
+      {error && (
+        <div className="error-message" role="alert">{error}</div>
+      )}
 
-        <section className="filters-card">
-          <div className="filters-grid">
-            <IdFilter activeId={filters.id} onApply={applyId} />
-            <StatusFilter value={filters.status} onChange={applyStatus} />
-          </div>
-
-          <ActiveFilters
-            filters={filters}
-            onClearId={clearId}
-            onClearStatus={clearStatus}
-            onClearAll={clearAll}
-          />
-        </section>
-
-        <div className="table-heading">
-          <h2>Текущие состояния</h2>
-          <span>{rows.length} записей</span>
+      <section className="filters-card">
+        <div className="filters-grid">
+          <IdFilter activeId={filters.id} onApply={applyId} />
+          <StatusFilter value={filters.status} onChange={applyStatus} />
         </div>
 
-        <StatusTable rows={rows} loading={loading} />
+        <ActiveFilters
+          filters={filters}
+          onClearId={clearId}
+          onClearStatus={clearStatus}
+          onClearAll={clearAll}
+        />
       </section>
+
+      <div className="table-heading">
+        <h2>Текущие состояния</h2>
+        <span>{rows.length} записей</span>
+      </div>
+
+      <StatusTable rows={rows} loading={loading} />
     </main>
   );
 }
