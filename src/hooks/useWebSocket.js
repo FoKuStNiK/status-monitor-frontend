@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://localhost:5000/ws';
+const WS_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:5000/ws';
 const RECONNECT_DELAY = 3000;
 
 export function useWebSocket({ enabled, onStatusUpdate, onReconnect }) {
