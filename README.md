@@ -1,16 +1,17 @@
 # Status Monitor Frontend
 
-React + Vite frontend.
+React 18 + Create React App (`react-scripts`).
 
 ## Запуск
 
 ```bash
 npm install
-cp .env.example .env
 npm start
 ```
 
 Сайт открывается на `http://localhost:3000`.
+
+Локальный `.env` для обычного запуска не обязателен. Если потребуется изменить адрес backend или WebSocket, можно создать `.env` по шаблону `.env.example`.
 
 ## Логика
 
