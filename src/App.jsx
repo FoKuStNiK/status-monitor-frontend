@@ -114,6 +114,11 @@ export default function App() {
         <div className="error-message" role="alert">{error}</div>
       )}
 
+      <div className="table-heading">
+        <h2>Текущие состояния</h2>
+        <span>{rows.length} записей</span>
+      </div>
+
       <section className="filters-card">
         <div className="filters-grid">
           <IdFilter activeId={filters.id} onApply={applyId} />
@@ -127,11 +132,6 @@ export default function App() {
           onClearAll={clearAll}
         />
       </section>
-
-      <div className="table-heading">
-        <h2>Текущие состояния</h2>
-        <span>{rows.length} записей</span>
-      </div>
 
       <StatusTable rows={rows} loading={loading} />
     </main>
