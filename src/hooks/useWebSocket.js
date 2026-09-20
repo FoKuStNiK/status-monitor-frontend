@@ -51,6 +51,13 @@ export function useWebSocket({ enabled, onStatusUpdate, onReconnect }) {
         try {
           const message = JSON.parse(event.data);
 
+          if (message.type === 'PING') {
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({ type: 'PONG' }));
+            }
+            return;
+          }
+
           if (message.type === 'status:updated' && message.data) {
             onStatusUpdateRef.current?.(message.data);
           }
