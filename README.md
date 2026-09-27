@@ -21,3 +21,9 @@ npm start
 4. WebSocket-события `status:updated` обновляют текущую выборку без дополнительного GET.
 5. Если WebSocket оборвался, показывается красное предупреждение и выполняется reconnect.
 6. После успешного reconnect выполняется GET с текущими активными фильтрами.
+
+git clone https://github.com/FoKuStNiK/status-monitor-frontend.git
+cd status-monitor-frontend
+npm install
+cp .env.example .env
+npm start
