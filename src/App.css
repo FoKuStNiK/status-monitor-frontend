@@ -236,6 +236,48 @@ tbody tr:hover { background: #f8fbff; }
   background: #fff;
 }
 
+.status-row {
+  cursor: pointer;
+}
+
+.status-row:hover {
+  background: #f8fbff;
+}
+
+.row-arrow {
+  display: inline-block;
+  width: 18px;
+  color: #697586;
+  font-size: 10px;
+}
+
+.details-row td {
+  padding: 0;
+  background: #f8fafc;
+}
+
+.details-row:hover {
+  background: #f8fafc;
+}
+
+.details-text {
+  margin: 0;
+  padding: 14px 18px;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  color: #344054;
+}
+
+.details-empty {
+  padding: 14px 18px;
+  color: #697586;
+  font-size: 13px;
+}
+
 @media (max-width: 720px) {
   .page-shell { padding: 14px; }
   .page-header { align-items: flex-start; }
