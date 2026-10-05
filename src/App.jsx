@@ -14,12 +14,22 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [initialRequestFinished, setInitialRequestFinished] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    return localStorage.getItem('theme') === 'dark';
+  });
   const filtersRef = useRef(filters);
   const requestNumberRef = useRef(0);
 
   useEffect(() => {
     filtersRef.current = filters;
   }, [filters]);
+
+  useEffect(() => {
+    localStorage.setItem(
+      'theme',
+      darkMode ? 'dark' : 'light'
+    );
+  }, [darkMode]);
 
   const loadData = useCallback(async currentFilters => {
     const requestNumber = ++requestNumberRef.current;
@@ -97,10 +107,21 @@ export default function App() {
   }
 
   return (
-    <main className="page-shell">
+    <main className={`page-shell ${darkMode ? 'dark' : ''}`}>
       <header className="page-header">
         <h1>Мониторинг состояний</h1>
-        <ConnectionStatus status={connectionStatus} />
+
+        <div className="header-actions">
+          <button
+            className="theme-button"
+            type="button"
+            onClick={() => setDarkMode(current => !current)}
+          >
+            {darkMode ? '☀ Светлая' : '☾ Тёмная'}
+          </button>
+
+          <ConnectionStatus status={connectionStatus} />
+        </div>
       </header>
 
       {connectionStatus === 'reconnecting' && (
