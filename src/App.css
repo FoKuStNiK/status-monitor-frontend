@@ -278,6 +278,169 @@ tbody tr:hover { background: #f8fbff; }
   font-size: 13px;
 }
 
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme-button {
+  border: 1px solid #c9d6e7;
+  border-radius: 7px;
+  padding: 6px 10px;
+  background: #ffffff;
+  color: #243b5a;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.theme-button:hover {
+  border-color: #aebfd6;
+  background: #f7f9fc;
+}
+
+.dark {
+  background: #171a1f;
+  color: #e6e9ee;
+}
+
+.dark .page-header {
+  border-color: #343a46;
+}
+
+.dark h1,
+.dark h2 {
+  color: #e6e9ee;
+}
+
+.dark .table-heading span,
+.dark .filter-field label,
+.dark .active-filters__title {
+  color: #aeb8c5;
+}
+
+.dark .theme-button {
+  background: #252a32;
+  color: #e6e9ee;
+  border-color: #404754;
+}
+
+.dark .theme-button:hover {
+  background: #2d333d;
+  border-color: #55606f;
+}
+
+.dark input,
+.dark select {
+  background: #252a32;
+  color: #e6e9ee;
+  border-color: #444c59;
+}
+
+.dark input:hover,
+.dark select:hover {
+  border-color: #596574;
+}
+
+.dark input:focus,
+.dark select:focus {
+  border-color: #7293c7;
+  box-shadow: 0 0 0 2px rgba(114, 147, 199, 0.14);
+}
+
+.dark .filter-chip {
+  background: #243246;
+  color: #9fc3f6;
+  border-color: #3c5474;
+}
+
+.dark .filter-chip:hover {
+  background: #2b3b52;
+}
+
+.dark .clear-all {
+  color: #aeb8c5;
+}
+
+.dark .table-wrap {
+  background: #20242b;
+  border-color: #39414d;
+}
+
+.dark th {
+  background: #292e37;
+  color: #bac3d0;
+}
+
+.dark td {
+  border-color: #343a43;
+}
+
+.dark tbody tr:hover,
+.dark .status-row:hover {
+  background: #292e37;
+}
+
+.dark .id-cell {
+  color: #8bb7f0;
+}
+
+.dark .row-arrow {
+  color: #9ba5b3;
+}
+
+.dark .details-row td,
+.dark .details-row:hover {
+  background: #1d2127;
+}
+
+.dark .details-text {
+  color: #d6dbe3;
+}
+
+.dark .details-empty {
+  color: #9ba5b3;
+}
+
+.dark .table-state {
+  background: #20242b;
+  border-color: #46505d;
+  color: #aeb8c5;
+}
+
+.dark .connection {
+  background: #2a2f37;
+  color: #d9dee6;
+}
+
+.dark .connection--connected {
+  background: #193525;
+  color: #8fd3a5;
+}
+
+.dark .connection--connecting {
+  background: #3b3218;
+  color: #e7c969;
+}
+
+.dark .connection--reconnecting {
+  background: #3b2224;
+  color: #ef9a9f;
+}
+
+.dark .connection-warning {
+  background: #3b2224;
+  border-color: #6a3438;
+  color: #ef9a9f;
+}
+
+.dark .error-message {
+  background: #3b3218;
+  border-color: #66582b;
+  color: #e7c969;
+}
+
 @media (max-width: 720px) {
   .page-shell { padding: 14px; }
   .page-header { align-items: flex-start; }
