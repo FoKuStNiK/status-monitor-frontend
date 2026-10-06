@@ -60,7 +60,7 @@ export default function StatusTable({ rows, loading }) {
           <tr>
             <th>ID</th>
             <th>Статус</th>
-            <th>Врем обновленияя</th>
+            <th>Врем обновления</th>
           </tr>
         </thead>
 
