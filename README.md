@@ -1,29 +1,45 @@
 # Status Monitor Frontend
 
-React 18 + Create React App (`react-scripts`).
+Frontend для системы мониторинга состояний.
 
-## Запуск
+Стек:
+
+- React 18
+- Create React App (`react-scripts`)
+
+## Установка и запуск
 
 ```bash
-npm install
-npm start
-```
-
-Сайт открывается на `http://localhost:3000`.
-
-Локальный `.env` для обычного запуска не обязателен. Если потребуется изменить адрес backend или WebSocket, можно создать `.env` по шаблону `.env.example`.
-
-## Логика
-
-1. При первом открытии выполняется `GET /api/statuses`.
-2. После завершения первого GET подключается WebSocket.
-3. При выборе фильтра выполняется новый GET с query-параметрами.
-4. WebSocket-события `status:updated` обновляют текущую выборку без дополнительного GET.
-5. Если WebSocket оборвался, показывается красное предупреждение и выполняется reconnect.
-6. После успешного reconnect выполняется GET с текущими активными фильтрами.
-
 git clone https://github.com/FoKuStNiK/status-monitor-frontend.git
 cd status-monitor-frontend
+
 npm install
 cp .env.example .env
 npm start
+```
+
+Сайт открывается на:
+
+```text
+http://localhost:3000
+```
+
+## Переменные окружения
+
+Пример `.env`:
+
+```env
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_WS_URL=ws://localhost:5000/ws
+```
+
+## Логика работы
+
+1. При первом открытии выполняется GET-запрос к backend.
+2. После первого запроса подключается WebSocket.
+3. Фильтры по ID и статусу выполняют новые GET-запросы.
+4. Обновления через WebSocket изменяют таблицу без перезагрузки страницы.
+5. При обрыве соединения выполняется автоматическое переподключение.
+6. После восстановления WebSocket данные повторно загружаются с текущими фильтрами.
+7. Строку таблицы можно раскрыть и посмотреть `details`.
+8. Доступна светлая и тёмная тема.
