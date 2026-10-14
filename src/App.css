@@ -187,6 +187,19 @@ select:focus {
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
+}
+
+th:nth-child(1) {
+  width: 15%;
+}
+
+th:nth-child(2) {
+  width: 35%;
+}
+
+th:nth-child(3) {
+  width: 50%;
 }
 
 th,
@@ -212,6 +225,7 @@ tbody tr:hover { background: #f8fbff; }
 .status-badge {
   display: inline-flex;
   align-items: center;
+  white-space: nowrap;
   padding: 4px 7px;
   border-radius: 999px;
   font-size: 12px;
