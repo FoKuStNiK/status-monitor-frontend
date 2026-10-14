@@ -29,11 +29,13 @@ function formatDetails(text) {
 }
 
 export default function StatusTable({ rows, loading }) {
-  const [expandedId, setExpandedId] = useState(null);
+  const [expandedIds, setExpandedIds] = useState([]);
 
   function toggleRow(id) {
-    setExpandedId(currentId =>
-      currentId === id ? null : id
+    setExpandedIds(currentIds =>
+      currentIds.includes(id)
+        ? currentIds.filter(currentId => currentId !== id)
+        : [...currentIds, id]
     );
   }
 
@@ -67,7 +69,7 @@ export default function StatusTable({ rows, loading }) {
         <tbody>
           {rows.map(row => {
             const isExpanded =
-              expandedId === row.id;
+              expandedIds.includes(row.id);
 
             return (
               <Fragment key={row.id}>
