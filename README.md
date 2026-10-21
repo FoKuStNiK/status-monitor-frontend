@@ -7,24 +7,37 @@ Frontend для системы мониторинга состояний.
 - React 18
 - Create React App (`react-scripts`)
 
-## Установка и запуск
+## Запуск с Docker Compose (ветка `docker`)
+
+Отдельный Nginx и Dockerfile frontend больше не нужны.
+Сборку React выполняет **Dockerfile из соседнего репозитория backend**;
+затем Express раздаёт готовые файлы frontend, API и WebSocket через один порт.
+
+Папки `status-monitor-frontend` и `status-monitor-backend` должны находиться рядом.
+Для запуска перейдите в каталог `status-monitor-backend`, создайте `.env`
+на основе `.env.example` и выполните:
+
+```bash
+docker compose up -d --build
+```
+
+После запуска сайт доступен на `http://localhost`.
+Подробности приведены в README backend.
+
+## Локальный запуск без Docker
 
 ```bash
 git clone https://github.com/FoKuStNiK/status-monitor-frontend.git
 cd status-monitor-frontend
-
 npm install
 cp .env.example .env
 npm start
 ```
 
-Сайт открывается на:
+React development server откроется на `http://localhost:3000`.
+Для работы API и WebSocket необходимо отдельно запустить backend на порту 5000.
 
-```text
-http://localhost:3000
-```
-
-## Переменные окружения
+## Переменные окружения для локальной разработки
 
 Пример `.env`:
 
@@ -32,6 +45,9 @@ http://localhost:3000
 REACT_APP_API_URL=http://localhost:5000
 REACT_APP_WS_URL=ws://localhost:5000/ws
 ```
+
+При сборке через Docker переменные не задаются, поэтому React использует
+относительные адреса `/api/statuses` и `/ws` на том же хосте.
 
 ## Логика работы
 
