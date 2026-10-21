@@ -1,12 +1,6 @@
 services:
   web:
     build: .
+    env_file: .env
     ports:
-      - "80:3000"
-    networks:
-      - status-monitor
-
-networks:
-  status-monitor:
-    external: true
-    name: status-monitor-net
+      - "3000:3000"
