@@ -1,17 +1,10 @@
-# Frontend can be built and started independently.
-# Create the shared network once: docker network create status-monitor-net
 services:
   web:
-    build:
-      context: .
+    build: .
     ports:
       - "80:3000"
-    environment:
-      PORT: "3000"
-      BACKEND_URL: "${BACKEND_URL:-http://backend:5000}"
     networks:
       - status-monitor
-    restart: unless-stopped
 
 networks:
   status-monitor:
