@@ -1,0 +1,10 @@
+{
+  "name": "status-monitor-web-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static React server and reverse proxy (no Nginx)",
+  "dependencies": {
+    "express": "5.1.0",
+    "http-proxy": "1.18.1"
+  }
+}
