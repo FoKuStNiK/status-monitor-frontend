@@ -15,6 +15,12 @@ const proxy = httpProxy.createProxyServer({
   xfwd: true
 });
 
+// The browser talks to this server using the same origin. Backend CORS
+// checks are intended for direct browser calls, not internal proxy requests.
+proxy.on('proxyReq', proxyReq => {
+  proxyReq.removeHeader('origin');
+});
+
 proxy.on('error', (error, req, res) => {
   console.error('Backend proxy error:', error.message);
   if (res && typeof res.writeHead === 'function') {
