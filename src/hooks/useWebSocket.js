@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from 'react';
 
-const WS_URL = process.env.REACT_APP_WS_URL || 'ws://localhost:5000/ws';
+const DEFAULT_WS_URL =
+  `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.host}/ws`;
+
+const WS_URL = process.env.REACT_APP_WS_URL || DEFAULT_WS_URL;
 const RECONNECT_DELAY = 3000;
 
 export function useWebSocket({ enabled, onStatusUpdate, onReconnect }) {
