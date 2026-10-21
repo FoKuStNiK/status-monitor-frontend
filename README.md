@@ -15,14 +15,33 @@ Frontend для системы мониторинга состояний.
 
 Папки `status-monitor-frontend` и `status-monitor-backend` должны находиться рядом.
 Для запуска перейдите в каталог `status-monitor-backend`, создайте `.env`
-на основе `.env.example` и выполните:
+на основе `.env.example` и замените `WEBHOOK_TOKEN` на секретный токен.
+
+**Сборка и запуск через Docker Compose:**
 
 ```bash
 docker compose up -d --build
 ```
 
+Для отдельной сборки без запуска используйте `docker compose build`.
+
+**Сборка напрямую через Dockerfile:** из общей папки
+`status-monitor` (на уровень выше обоих репозиториев) выполните:
+
+```bash
+docker build -f status-monitor-backend/Dockerfile -t status-monitor:latest .
+```
+
+Последняя точка — контекст сборки, включающий frontend и backend.
+Команда `docker build` создаёт образ, но не запускает контейнер.
+
+Перед пересборкой после изменений на GitHub обновите **обе** локальные ветки
+`docker` (команды `git fetch origin`, `git switch docker`, `git pull`
+в каждом репозитории). Если локальной ветки ещё нет, используйте
+`git switch --track origin/docker`.
+
 После запуска сайт доступен на `http://localhost`.
-Подробности приведены в README backend.
+Подробная инструкция — в README backend.
 
 ## Локальный запуск без Docker
 
