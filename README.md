@@ -1,164 +1,173 @@
-# Status Monitor Frontend
+# Status Monitor — Frontend
 
-Это сайт «Мониторинг состояний»: таблица ID, статусов, времени обновления и подробностей. Он написан на React.
+Frontend системы мониторинга состояний: React 18, таблица статусов, фильтры по ID и статусу, подробности событий и обновления через WebSocket.
 
-**У frontend собственные `Dockerfile` и `docker-compose.yml`.** Он собирается и запускается независимо от backend. Никаких соседних каталогов с серверным кодом не требуется. **Nginx не используется.**
+- **Frontend (этот репозиторий):** [status-monitor-frontend](https://github.com/FoKuStNiK/status-monitor-frontend).
+- **Backend (отдельный репозиторий):** [status-monitor-backend](https://github.com/FoKuStNiK/status-monitor-backend).
 
-[Backend — отдельный репозиторий](https://github.com/FoKuStNiK/status-monitor-backend). Он принимает Webhook, хранит SQLite и отправляет обновления по WebSocket.
+## Как устроен проект
 
-## 1. Как работает сайт
+Раньше каждую часть запускали через `npm start` в отдельном терминале. Docker запускает **те же два процесса в двух независимых контейнерах**:
 
-- Во время сборки Docker запускает `npm run build` и создаёт готовые файлы React.
-- В контейнере запускается маленький сервер Node.js из `docker/server.js`, который отдаёт HTML, JS и CSS браузеру.
-- Запросы браузера по `/api/...` и WebSocket `/ws` сервер frontend перенаправляет в backend.
-- Если backend выключен, страница frontend всё ещё откроется, но актуальные статусы загружены не будут.
-- Два контейнера могут работать в одной Docker-сети, хотя их исходные проекты лежат в разных папках.
+| Приложение | Команда | Адрес при локальном запуске |
+| --- | --- | --- |
+| Frontend | `npm start` → `react-scripts start` | http://localhost:3000 |
+| Backend | `npm start` → Express | http://localhost:5000 |
 
-## 2. Что установить
+React загружается браузером с порта 3000, затем **браузер напрямую** запрашивает API и WebSocket backend на порту 5000. Отдельного `docker/server.js`, Nginx и прокси здесь нет. Контейнерам не нужно находиться в соседних папках: каждый собирается из своего репозитория.
 
-Нужен Docker Desktop (Windows/macOS) или Docker Engine с Compose (Linux). Проверка:
+> Внимание: `react-scripts start` — сервер **разработки**. Конфигурация подходит для обучения и тестирования, но для постоянной публичной эксплуатации нужна production-сборка, HTTPS и настройка безопасного доступа к API.
 
-```bash
+## Первый запуск через Docker на своём компьютере
+
+### 1. Установите Docker
+
+Потребуется Docker Desktop (Windows/macOS) либо Docker Engine + Compose (Linux).
+
+Проверьте в терминале:
+
+~~~bash
 docker --version
 docker compose version
-```
+~~~
 
-## 3. Запуск только frontend
+### 2. Скачайте frontend
 
-### Шаг 1. Скачать репозиторий
-
-```bash
+~~~bash
 git clone https://github.com/FoKuStNiK/status-monitor-frontend.git
 cd status-monitor-frontend
-```
+~~~
 
-**Скачивать исходники backend для сборки frontend не нужно.**
+Если проект уже скачан, достаточно `git pull origin main` (при условии, что у вас нет несохранённых конфликтующих локальных изменений).
 
-### Шаг 2. Создать общую Docker-сеть (один раз)
+### 3. Создайте настройки .env
 
-```bash
-docker network create status-monitor-net
-```
+В Git Bash / Linux:
 
-Если сеть уже существует, второй раз создавать её не требуется. Это сеть **одного Docker-хоста**, к которой можно присоединить backend из другого Compose-проекта.
+~~~bash
+cp .env.example .env
+~~~
 
-### Шаг 3. Собрать и запустить frontend
+В PowerShell:
 
-Из папки `status-monitor-frontend`:
+~~~powershell
+Copy-Item .env.example .env
+~~~
 
-```bash
+Для локального запуска файл должен содержать:
+
+~~~dotenv
+REACT_APP_API_URL=http://localhost:5000
+REACT_APP_WS_URL=ws://localhost:5000/ws
+~~~
+
+`localhost` здесь означает **компьютер, на котором открыт браузер**. При разработке на том же компьютере, где работает Docker, менять адреса не нужно.
+
+Compose передаёт переменные из `.env` в процесс `react-scripts start` через `env_file`. Сам файл `.env` не копируется в Docker-образ (`.dockerignore` исключает его).
+
+### 4. Соберите и запустите контейнер
+
+~~~bash
 docker compose up -d --build
 docker compose ps
-```
+~~~
 
-Эта команда запускает **только frontend**, не пересобирая и не запуская backend.
+- `--build` собирает образ из текущего Dockerfile.
+- `up` создаёт и запускает контейнер.
+- `-d` запускает его в фоне.
 
-Откройте http://localhost на компьютере с Docker.
+Откройте http://localhost:3000. **Это запускает только frontend.** Для отображения статусов нужно отдельно запустить backend по его [инструкции](https://github.com/FoKuStNiK/status-monitor-backend/blob/main/README.md).
 
-В `docker-compose.yml`:
-- `build: .` — файлы для сборки берутся **только из текущего репозитория**;
-- `ports: "80:3000"` — порт 80 компьютера передаётся на порт 3000 контейнера;
-- `BACKEND_URL` не требуется указывать в Compose: сервер frontend по умолчанию использует `http://backend:5000`;
-- `status-monitor-net` — общая Docker-сеть для обмена с backend.
+### 5. Проверьте связь
 
-Если порт 80 уже занят, измените `"80:3000"` на `"8080:3000"` в Compose и открывайте http://localhost:8080.
+Когда backend запущен, откройте:
 
-## 4. Подключить отдельно работающий backend
+- http://localhost:5000/api/health — ожидается `{"ok":true}`.
+- http://localhost:3000 — таблица мониторинга.
 
-На **том же Docker-хосте** скачайте [backend](https://github.com/FoKuStNiK/status-monitor-backend) в любую папку и следуйте его README: создайте `.env`, затем в каталоге backend выполните:
+Чтобы заполнить таблицу тестовыми данными, из папки **backend** выполните `docker compose exec backend npm run test:webhook`.
 
-```bash
-docker compose up -d --build
-```
+## Что записано в Dockerfile и Compose
 
-Backend не нуждается в папке frontend, а frontend не нуждается в папке backend. Оба сервиса используют заранее созданную общую сеть, поэтому frontend находит backend по имени `backend`.
+`Dockerfile` устанавливает Node.js 20, зависимости через `npm install`, копирует исходники React и выполняет `CMD ["npm", "start"]`. Это ровно тот процесс, который раньше запускался в терминале.
 
-**Порядок не важен:** каждый проект запускается самостоятельно. Для появления актуальных состояний backend должен работать.
+`docker-compose.yml`:
 
-Если frontend и backend находятся **на разных серверах**, Docker-сеть их автоматически не объединяет. Нужно отдельно обеспечить сетевую доступность API и добавить переменную `BACKEND_URL` в `environment` frontend Compose с безопасным адресом backend.
+~~~yaml
+services:
+  web:
+    build: .
+    env_file: .env
+    ports:
+      - "3000:3000"
+~~~
 
-## 5. Как остановить и обновить только frontend
+Порт слева — на компьютере, справа — внутри контейнера. `env_file` передаёт переменные React в запускаемый процесс.
 
-В каталоге frontend:
-
-| Команда | Что делает |
-| --- | --- |
-| `docker compose ps` | Состояние frontend |
-| `docker compose logs -f` | Показывает логи; выйти из просмотра — Ctrl+C |
-| `docker compose down` | Останавливает и удаляет контейнер frontend |
-| `docker compose up -d --build` | Собирает и запускает frontend |
-
-Для обновления выполните:
-
-```bash
-git pull origin main
-docker compose up -d --build
-```
-
-Это **не обновляет backend**.
-
-## 6. Локальная разработка без Docker
-
-Нужен Node.js 20+ и npm. Backend должен быть отдельно запущен на http://localhost:5000.
+## Управление и обновление
 
 В папке frontend:
 
-```bash
+~~~bash
+docker compose ps
+docker compose logs -f
+docker compose down
+~~~
+
+- `ps` — состояние контейнера.
+- `logs -f` — сообщения сервера; Ctrl+C прекращает только просмотр.
+- `down` — остановить и удалить контейнер.
+
+Обновление кода и перезапуск:
+
+~~~bash
+git pull origin main
+docker compose up -d --build
+~~~
+
+Backend при этом не изменяется.
+
+## Запуск без Docker
+
+Установите Node.js 20+ и npm, создайте `.env` как выше, затем:
+
+~~~bash
 npm install
-```
-
-Создайте файл `.env` на основе `.env.example`:
-- Git Bash / Linux: `cp .env.example .env`;
-- PowerShell: `Copy-Item .env.example .env`.
-
-Проверьте настройки:
-
-```dotenv
-REACT_APP_API_URL=http://localhost:5000
-REACT_APP_WS_URL=ws://localhost:5000/ws
-```
-
-Затем:
-
-```bash
 npm start
-```
+~~~
 
-Откройте http://localhost:3000. Это React-сервер разработки, а не Docker-контейнер. Остановка — Ctrl+C.
+Откройте http://localhost:3000. Backend запускается отдельно.
 
-Для Docker-сборки локальный файл `.env` frontend исключён, поэтому браузер использует относительные пути `/api` и `/ws`, которые обслуживает Node.js-прокси.
+## Если приложение переезжает на VPS
 
-## 7. Что умеет сайт
+При открытии сайта на **другом компьютере** `localhost:5000` будет указывать на компьютер пользователя, а не на VPS. Поэтому перед запуском на сервере измените адреса в frontend `.env` на доступный браузеру IP или домен VPS.
 
-- Показывает ID, статус и время обновления.
-- Фильтрует записи по ID и статусу.
-- Показывает `details` при раскрытии строки.
-- Обновляет статусы в реальном времени через WebSocket.
-- Переподключается после разрыва соединения.
-- Поддерживает светлую и тёмную темы.
+Пример **только для учебного тестирования** (адрес `203.0.113.10` условный):
 
-## 8. Основные файлы
+~~~dotenv
+REACT_APP_API_URL=http://203.0.113.10:5000
+REACT_APP_WS_URL=ws://203.0.113.10:5000/ws
+~~~
 
-| Файл | Назначение |
+В backend `.env` потребуется разрешить адрес сайта: `FRONTEND_ORIGIN=http://203.0.113.10:3000`. Сетевые правила VPS должны позволять браузеру подключаться к портам 3000 и 5000. Эта схема использует незашифрованные HTTP/WS и **не предназначена для открытой production-эксплуатации**: нужно отдельно настроить HTTPS/WSS и ограничение доступа к API.
+
+При изменении `.env` перезапустите контейнер командой `docker compose up -d --force-recreate`: сервер React считывает переменные при запуске.
+
+## Частые проблемы
+
+| Симптом | Причина / проверка |
 | --- | --- |
-| `Dockerfile` | Собирает образ frontend без backend |
-| `docker-compose.yml` | Запускает только контейнер frontend |
-| `docker/server.js` | Раздаёт React, передаёт API и WebSocket на backend |
-| `docker/package.json` | Зависимости небольшого Node.js-сервера |
-| `.dockerignore` | Исключает ненужные файлы из сборки |
-| `src/App.jsx` | Основная страница React |
-| `src/components/StatusTable.jsx` | Таблица состояний |
-| `src/api/statusApi.js` | HTTP-запросы |
-| `src/hooks/useWebSocket.js` | WebSocket и переподключение |
+| Compose не находит `.env` | Создайте файл из `.env.example`. |
+| Сайт открылся, но статусов нет | Проверьте `REACT_APP_API_URL` и запущен ли backend. |
+| Ошибка CORS в консоли браузера | Проверьте `FRONTEND_ORIGIN` в backend. |
+| WebSocket не подключается | Проверьте `REACT_APP_WS_URL` и порт 5000. |
+| Порт 3000 занят | Остановите старый процесс или измените левую часть `3000:3000`. |
 
-## 9. Частые ошибки
+## Основные файлы
 
-| Проблема | Решение |
-| --- | --- |
-| `network status-monitor-net not found` | Один раз создайте сеть: `docker network create status-monitor-net` |
-| Порт 80 занят | Поменяйте публикацию порта на `"8080:3000"` |
-| Сайт открывается, но API возвращает 502 | Backend ещё не запущен или не доступен по `BACKEND_URL` |
-| WebSocket не подключается | Проверьте работу backend и общую сеть |
-| Изменения в React не появились | Выполните `docker compose up -d --build` |
-
-Для эксплуатации в интернете следует настроить HTTPS, корректный адрес backend и защиту передаваемых данных.
+- `src/App.jsx` — интерфейс и состояние таблицы.
+- `src/api/statusApi.js` — HTTP-запросы к backend.
+- `src/hooks/useWebSocket.js` — WebSocket и переподключение.
+- `Dockerfile` — образ frontend.
+- `docker-compose.yml` — запуск frontend.
+- `.env.example` — образец переменных окружения.
